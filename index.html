@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rajasthan Royals | SupeRR Selector S2 - Pressure Analytics War Room</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0A1128; color: #F1F5F9; }
+        .rr-pink { color: #E80071; }
+        .bg-rr-pink { background-color: #E80071; }
+        .border-rr-pink { border-color: #E80071; }
+        .rr-blue { color: #004BA0; }
+        .bg-rr-blue { background-color: #004BA0; }
+        .rr-gold { color: #D4AF37; }
+        .bg-rr-gold { background-color: #D4AF37; }
+        .card-dark { background-color: #131E3D; border: 1px solid #1E294B; }
+        .tab-btn.active { background-color: #E80071; color: white; border-color: #E80071; font-weight: 700; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-[#0B1536]/90 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#E80071] to-[#004BA0] flex items-center justify-center font-black text-white text-xl shadow-lg shadow-pink-500/20">
+                    RR
+                </div>
+                <div>
+                    <div class="text-xs font-bold uppercase tracking-widest text-[#E80071]">SupeRR Selector Season 2 • Round 1</div>
+                    <h1 class="text-xl font-extrabold tracking-tight text-white">Pressure Reliability Engine & IPL 2027 Auction War Room</h1>
+                </div>
+            </div>
+            <div class="flex items-center space-x-3 text-xs">
+                <span class="px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700 text-slate-300 font-semibold">Dataset: 2022–2026 (IPL + T20I)</span>
+                <span class="px-3 py-1.5 rounded-full bg-[#E80071]/20 border border-[#E80071]/40 text-pink-300 font-bold">Official RR War Room Submission</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <!-- Executive KPI Banner -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="card-dark rounded-xl p-5 shadow-lg">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Analyzed Deliveries</div>
+                <div class="text-2xl font-black text-white mt-1">200,999</div>
+                <div class="text-xs text-slate-400 mt-1 flex items-center gap-1">Across <span class="text-white font-bold">867</span> T20 Matches (2022–26)</div>
+            </div>
+            <div class="card-dark rounded-xl p-5 shadow-lg border-l-4 border-l-[#E80071]">
+                <div class="text-xs font-semibold text-pink-400 uppercase tracking-wider">High-Pressure Balls</div>
+                <div class="text-2xl font-black text-[#E80071] mt-1">39,237</div>
+                <div class="text-xs text-slate-400 mt-1">PI &ge; 6.5 (Top <span class="text-pink-300 font-bold">19.5%</span> of all deliveries)</div>
+            </div>
+            <div class="card-dark rounded-xl p-5 shadow-lg border-l-4 border-l-[#D4AF37]">
+                <div class="text-xs font-semibold text-amber-400 uppercase tracking-wider">Wicket Hazard Ratio</div>
+                <div class="text-2xl font-black text-[#D4AF37] mt-1">1.81&times;</div>
+                <div class="text-xs text-slate-400 mt-1">Dismissal risk spikes from <span class="text-white font-bold">4.89% &rarr; 8.83%</span></div>
+            </div>
+            <div class="card-dark rounded-xl p-5 shadow-lg border-l-4 border-l-[#004BA0]">
+                <div class="text-xs font-semibold text-blue-400 uppercase tracking-wider">Economy Rate Surge</div>
+                <div class="text-2xl font-black text-blue-400 mt-1">+1.71 rpo</div>
+                <div class="text-xs text-slate-400 mt-1">Peer economy jumps from <span class="text-white font-bold">8.52 &rarr; 10.23</span> rpo</div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap gap-2 border-b border-slate-800 pb-2">
+            <button onclick="switchTab('batters')" id="tab-btn-batters" class="tab-btn active px-5 py-2.5 rounded-lg text-sm transition-all duration-150">
+                Top 10 Batters Under Pressure
+            </button>
+            <button onclick="switchTab('bowlers')" id="tab-btn-bowlers" class="tab-btn px-5 py-2.5 rounded-lg text-sm bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition-all duration-150">
+                Top 10 Bowlers Under Pressure
+            </button>
+            <button onclick="switchTab('methodology')" id="tab-btn-methodology" class="tab-btn px-5 py-2.5 rounded-lg text-sm bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition-all duration-150">
+                Methodology & Mathematics
+            </button>
+            <button onclick="switchTab('auction')" id="tab-btn-auction" class="tab-btn px-5 py-2.5 rounded-lg text-sm bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition-all duration-150">
+                RR IPL 2027 War Room
+            </button>
+            <button onclick="switchTab('benchmarks')" id="tab-btn-benchmarks" class="tab-btn px-5 py-2.5 rounded-lg text-sm bg-slate-800/60 hover:bg-slate-800 text-slate-300 transition-all duration-150">
+                Universal Benchmarks & Eligibility
+            </button>
+        </div>
+
+        <!-- TAB 1: BATTERS -->
+        <section id="tab-batters" class="space-y-6">
+            <div class="card-dark rounded-xl p-6">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-black text-white flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-pink-500"></span>
+                            Official Top 10 Batters Under Pressure (Dropdown-Ready for Unstop)
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Ranked from 1 to 10 by Composite Pressure Batting Index (PBI). Minimum 100 HP balls faced, Bayesian-regressed, active IPL 2027 eligible.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-xs text-left text-slate-300 divide-y divide-slate-800">
+                        <thead class="bg-slate-900/80 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                            <tr>
+                                <th class="py-3 px-3">Rank</th>
+                                <th class="py-3 px-4">Player Name (Unstop Field)</th>
+                                <th class="py-3 px-3">Tactical Archetype</th>
+                                <th class="py-3 px-3 text-right">HP Balls</th>
+                                <th class="py-3 px-3 text-right">HP Runs</th>
+                                <th class="py-3 px-3 text-right text-pink-400">HP SR</th>
+                                <th class="py-3 px-3 text-right">HP Avg</th>
+                                <th class="py-3 px-3 text-right text-emerald-400">&Delta; SR (Clutch)</th>
+                                <th class="py-3 px-3 text-right text-amber-300 font-black">Rating (0-100)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-medium" id="batters-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card-dark rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-white mb-3">Strike Rate vs. Average Under High Pressure</h3>
+                    <img src="chart_batters_scatter.png" class="rounded-lg w-full h-auto object-cover border border-slate-700/60" alt="Batters Scatter">
+                </div>
+                <div class="card-dark rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-white mb-3">Clutch Elevation (&Delta; Strike Rate vs. Baseline)</h3>
+                    <img src="chart_batters_clutch_delta.png" class="rounded-lg w-full h-auto object-cover border border-slate-700/60" alt="Batters Clutch Delta">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: BOWLERS -->
+        <section id="tab-bowlers" class="space-y-6 hidden">
+            <div class="card-dark rounded-xl p-6">
+                <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="text-lg font-black text-white flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                            Official Top 10 Bowlers Under Pressure (Dropdown-Ready for Unstop)
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Ranked from 1 to 10 by Composite Pressure Bowling Index (PBI). Minimum 120 HP legal deliveries, Bayesian-regressed, active IPL 2027 eligible.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-xs text-left text-slate-300 divide-y divide-slate-800">
+                        <thead class="bg-slate-900/80 text-slate-400 font-bold uppercase text-[10px] tracking-wider">
+                            <tr>
+                                <th class="py-3 px-3">Rank</th>
+                                <th class="py-3 px-4">Player Name (Unstop Field)</th>
+                                <th class="py-3 px-3">Tactical Archetype</th>
+                                <th class="py-3 px-3 text-right">HP Balls</th>
+                                <th class="py-3 px-3 text-right">HP Wkts</th>
+                                <th class="py-3 px-3 text-right text-emerald-400">HP Econ</th>
+                                <th class="py-3 px-3 text-right">HP Avg</th>
+                                <th class="py-3 px-3 text-right text-blue-400">&Delta; Econ (Resilience)</th>
+                                <th class="py-3 px-3 text-right text-amber-300 font-black">Rating (0-100)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-medium" id="bowlers-table-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card-dark rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-white mb-3">Economy vs. Bowling Average Under High Pressure</h3>
+                    <img src="chart_bowlers_scatter.png" class="rounded-lg w-full h-auto object-cover border border-slate-700/60" alt="Bowlers Scatter">
+                </div>
+                <div class="card-dark rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-white mb-3">Economy Resilience vs. Peer Surge (+1.71 rpo)</h3>
+                    <img src="chart_bowlers_clutch_delta.png" class="rounded-lg w-full h-auto object-cover border border-slate-700/60" alt="Bowlers Economy Resilience">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: METHODOLOGY -->
+        <section id="tab-methodology" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="card-dark rounded-xl p-6 space-y-4">
+                    <h3 class="text-base font-black text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#E80071]"></span>
+                        1. Defining Delivery-Level Pressure (PI &isin; [1, 10])
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Pressure is formulated as a dynamic, continuous leverage index rather than an arbitrary binary split. Every delivery receives a Pressure Index score based on three dimensional inputs:
+                    </p>
+                    <div class="space-y-2 text-xs text-slate-300">
+                        <div class="p-3 bg-slate-900/60 rounded border border-slate-800">
+                            <div class="font-bold text-pink-400 mb-1">&bull; Chasing Innings (Innings 2):</div>
+                            <div>Governed by Required Run Rate strain <code class="text-pink-300">((RRR - 5.5) / 2.0)</code>, Wicket Resource Depletion <code class="text-pink-300">((10 - W) / 10 &times; 2.5)</code>, and Endgame Crunch Criticality in death overs (&le; 36 balls remaining).</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 rounded border border-slate-800">
+                            <div class="font-bold text-blue-400 mb-1">&bull; Target-Setting Innings (Innings 1):</div>
+                            <div>Governed by Early Top-Order Crisis/Collapse (&ge;2-3 wickets in powerplay, &ge;4 wickets before over 12) and Death Overs Execution pressure (overs 16-20).</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 rounded border border-slate-800">
+                            <div class="font-bold text-amber-400 mb-1">&bull; Stakes & Quality Multipliers:</div>
+                            <div>Knockouts/Playoffs (<code class="text-amber-300">1.20&times; - 1.25&times;</code>), Super Overs (<code class="text-amber-300">PI = 10.0</code>), and IPL/Elite International tier weighting.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-dark rounded-xl p-6 space-y-4">
+                    <h3 class="text-base font-black text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-[#004BA0]"></span>
+                        2. Performance Measurement & Bayesian Shrinkage
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Raw statistics deceive due to small-sample variance. Our framework solves this via a three-tier scoring engine:
+                    </p>
+                    <div class="space-y-2 text-xs text-slate-300">
+                        <div class="p-3 bg-slate-900/60 rounded border border-slate-800">
+                            <div class="font-bold text-slate-200 mb-1">A. Absolute Pressure Performance (70%):</div>
+                            <div>Multi-factor scoring against population pressure baselines (Batting: SR, Avg, Boundary%, Dot Resistance; Bowling: Economy efficiency, Average efficiency, Dot%, Boundary suppression).</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 rounded border border-slate-800">
+                            <div class="font-bold text-emerald-400 mb-1">B. Clutch Delta Score (30%):</div>
+                            <div>Measures whether the player elevates (&Delta;SR &gt; 0, &Delta;Econ &lt; +1.71 peer surge) or wilts under pressure compared to their own baseline.</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/60 rounded border border-slate-800">
+                            <div class="font-bold text-amber-300 mb-1">C. Bayesian Credibility Shrinkage:</div>
+                            <div><code class="text-amber-300">w = N / (N + N0)</code> (N0 = 120 balls). Pulls small sample sizes towards the league mean, ensuring proven pedigree triumphs over flukes.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-dark rounded-xl p-5">
+                <h3 class="text-sm font-bold text-white mb-3">Delivery-Level Pressure Distribution & Environmental Shift</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <img src="chart_pi_distribution.png" class="rounded-lg w-full h-auto object-cover border border-slate-700/60" alt="PI Distribution">
+                    <img src="chart_env_shift.png" class="rounded-lg w-full h-auto object-cover border border-slate-700/60" alt="Environmental Shift">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: AUCTION STRATEGY -->
+        <section id="tab-auction" class="space-y-6 hidden">
+            <div class="card-dark rounded-xl p-6">
+                <h2 class="text-lg font-black text-white flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#D4AF37]"></span>
+                    Rajasthan Royals IPL 2027 Auction War Room Roadmap
+                </h2>
+                <p class="text-xs text-slate-400 mb-6">Tactical portfolio assembly for RR: Retained core, high-priority auction targets, tactical role fits, and purse optimization.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-pink-500/30">
+                        <div class="text-xs font-bold text-pink-400 uppercase tracking-wider mb-2">Priority 1: Death Pacing Enforcer</div>
+                        <h4 class="text-base font-black text-white">Matheesha Pathirana</h4>
+                        <div class="text-xs text-slate-300 mt-2 space-y-1">
+                            <div>&bull; <strong class="text-white">Why RR Needs Him:</strong> RR's historical death economy has leaked in overs 18-20. Pathirana is the world's #1 death wicket-taker (47 HP wkts, SR 10.3).</div>
+                            <div>&bull; <strong class="text-white">Tactical Pair:</strong> Pairs with Jofra Archer/Sandeep Sharma to form an impenetrable death wall.</div>
+                            <div>&bull; <strong class="text-white">Purse Budget:</strong> Reserve up to &pound;12-15 Cr in auction.</div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-blue-500/30">
+                        <div class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2">Priority 2: Hyper-Clutch Finisher / WK</div>
+                        <h4 class="text-base font-black text-white">Tristan Stubbs</h4>
+                        <div class="text-xs text-slate-300 mt-2 space-y-1">
+                            <div>&bull; <strong class="text-white">Why RR Needs Him:</strong> Model #1 rated batter in world cricket under pressure (Rating 92.7, SR 198.1, Avg 43.7, +78.6 Clutch SR).</div>
+                            <div>&bull; <strong class="text-white">Tactical Fit:</strong> Solves RR's lower-order finishing alongside Shimron Hetmyer and Dhruv Jurel.</div>
+                            <div>&bull; <strong class="text-white">Purse Budget:</strong> Aggressive bidding up to &pound;10-12 Cr.</div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-amber-500/30">
+                        <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">Priority 3: Elite High-Leverage Spin</div>
+                        <h4 class="text-base font-black text-white">Noor Ahmad / Rasikh Salam</h4>
+                        <div class="text-xs text-slate-300 mt-2 space-y-1">
+                            <div>&bull; <strong class="text-white">Noor Ahmad:</strong> Left-arm mystery wrist spin (Econ 7.86, Avg 13.86 in HP). Elite Jaipur Sawai Mansingh Stadium pitch fit.</div>
+                            <div>&bull; <strong class="text-white">Rasikh Salam:</strong> High-value Indian domestic death specialist (20 HP wkts, Avg 13.85). Preserves overseas slots!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-dark rounded-xl p-5 border border-slate-700/60">
+                    <h3 class="text-sm font-bold text-white mb-3">Tactical Alignment & Portfolio Matrix for Rajasthan Royals</h3>
+                    <img src="chart_rr_auction_matrix.png" class="rounded-lg w-full h-auto object-cover" alt="RR Auction Matrix">
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: UNIVERSAL BENCHMARKS -->
+        <section id="tab-benchmarks" class="space-y-6 hidden">
+            <div class="card-dark rounded-xl p-6">
+                <h2 class="text-lg font-black text-white flex items-center gap-2 mb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    Fair Comparisons, Eligibility & Universal Mathematical Benchmarks
+                </h2>
+                <p class="text-xs text-slate-400 mb-6">Full transparency: Comparison of pure mathematical dataset rankings vs. practical IPL 2027 auction eligibility.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-sm font-bold text-pink-400 mb-3 uppercase tracking-wider">Universal Top 10 Batters (All Dataset)</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-xs text-left text-slate-300 divide-y divide-slate-800">
+                                <thead class="bg-slate-900/80 text-slate-400 text-[10px] uppercase">
+                                    <tr>
+                                        <th class="py-2 px-2">#</th>
+                                        <th class="py-2 px-3">Player</th>
+                                        <th class="py-2 px-2 text-right">HP SR</th>
+                                        <th class="py-2 px-2 text-right">HP Avg</th>
+                                        <th class="py-2 px-2 text-right">Rating</th>
+                                        <th class="py-2 px-2">Eligibility Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/40 text-[11px]">
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">1</td><td class="py-2 px-3 font-semibold text-white">Tristan Stubbs</td><td class="py-2 px-2 text-right">198.1</td><td class="py-2 px-2 text-right">43.7</td><td class="py-2 px-2 text-right font-bold text-amber-300">92.7</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">2</td><td class="py-2 px-3 font-semibold text-white">Namboori Tilak Varma</td><td class="py-2 px-2 text-right">201.7</td><td class="py-2 px-2 text-right">39.2</td><td class="py-2 px-2 text-right font-bold text-amber-300">90.9</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">3</td><td class="py-2 px-3 font-semibold text-white">Tim David</td><td class="py-2 px-2 text-right">204.4</td><td class="py-2 px-2 text-right">33.3</td><td class="py-2 px-2 text-right font-bold text-amber-300">87.7</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">4</td><td class="py-2 px-3 font-semibold text-white">Rinku Singh</td><td class="py-2 px-2 text-right">193.5</td><td class="py-2 px-2 text-right">32.7</td><td class="py-2 px-2 text-right font-bold text-amber-300">86.2</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">5</td><td class="py-2 px-3 font-semibold text-white">Suryakumar Yadav</td><td class="py-2 px-2 text-right">224.0</td><td class="py-2 px-2 text-right">30.5</td><td class="py-2 px-2 text-right font-bold text-amber-300">84.7</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">6</td><td class="py-2 px-3 font-semibold text-white">Rishabh Pant</td><td class="py-2 px-2 text-right">203.1</td><td class="py-2 px-2 text-right">35.2</td><td class="py-2 px-2 text-right font-bold text-amber-300">83.2</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr class="opacity-60"><td class="py-2 px-2 font-bold text-slate-500">7</td><td class="py-2 px-3 font-semibold text-slate-300">Matthew Wade</td><td class="py-2 px-2 text-right">171.6</td><td class="py-2 px-2 text-right">53.2</td><td class="py-2 px-2 text-right font-bold text-slate-300">82.7</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-amber-900/60 text-amber-300">Retired / INT</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">8</td><td class="py-2 px-3 font-semibold text-white">Shashank Singh</td><td class="py-2 px-2 text-right">187.5</td><td class="py-2 px-2 text-right">37.5</td><td class="py-2 px-2 text-right font-bold text-amber-300">81.6</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr class="opacity-60"><td class="py-2 px-2 font-bold text-slate-500">9</td><td class="py-2 px-3 font-semibold text-slate-300">Dinesh Karthik</td><td class="py-2 px-2 text-right">188.9</td><td class="py-2 px-2 text-right">27.2</td><td class="py-2 px-2 text-right font-bold text-slate-300">80.2</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-rose-900/60 text-rose-300">Retired IPL 2024</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-pink-400">10</td><td class="py-2 px-3 font-semibold text-white">David Miller</td><td class="py-2 px-2 text-right">176.6</td><td class="py-2 px-2 text-right">30.0</td><td class="py-2 px-2 text-right font-bold text-amber-300">79.9</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-sm font-bold text-blue-400 mb-3 uppercase tracking-wider">Universal Top 10 Bowlers (All Dataset)</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-xs text-left text-slate-300 divide-y divide-slate-800">
+                                <thead class="bg-slate-900/80 text-slate-400 text-[10px] uppercase">
+                                    <tr>
+                                        <th class="py-2 px-2">#</th>
+                                        <th class="py-2 px-3">Player</th>
+                                        <th class="py-2 px-2 text-right">HP Econ</th>
+                                        <th class="py-2 px-2 text-right">HP Avg</th>
+                                        <th class="py-2 px-2 text-right">Rating</th>
+                                        <th class="py-2 px-2">Eligibility Note</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/40 text-[11px]">
+                                    <tr><td class="py-2 px-2 font-bold text-blue-400">1</td><td class="py-2 px-3 font-semibold text-white">Jasprit Bumrah</td><td class="py-2 px-2 text-right">7.15</td><td class="py-2 px-2 text-right">15.05</td><td class="py-2 px-2 text-right font-bold text-amber-300">78.4</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr class="opacity-60"><td class="py-2 px-2 font-bold text-slate-500">2</td><td class="py-2 px-3 font-semibold text-slate-300">Abrar Ahmed</td><td class="py-2 px-2 text-right">5.47</td><td class="py-2 px-2 text-right">11.40</td><td class="py-2 px-2 text-right font-bold text-slate-300">77.7</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-rose-900/60 text-rose-300">PAK (Ineligible IPL)</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-blue-400">3</td><td class="py-2 px-3 font-semibold text-white">Kuldeep Yadav</td><td class="py-2 px-2 text-right">7.86</td><td class="py-2 px-2 text-right">11.97</td><td class="py-2 px-2 text-right font-bold text-amber-300">77.2</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-blue-400">4</td><td class="py-2 px-3 font-semibold text-white">Sunil Narine</td><td class="py-2 px-2 text-right">6.55</td><td class="py-2 px-2 text-right">14.42</td><td class="py-2 px-2 text-right font-bold text-amber-300">76.9</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-blue-400">5</td><td class="py-2 px-3 font-semibold text-white">Matheesha Pathirana</td><td class="py-2 px-2 text-right">8.69</td><td class="py-2 px-2 text-right">14.91</td><td class="py-2 px-2 text-right font-bold text-amber-300">73.9</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-blue-400">6</td><td class="py-2 px-3 font-semibold text-white">Noor Ahmad</td><td class="py-2 px-2 text-right">7.86</td><td class="py-2 px-2 text-right">13.86</td><td class="py-2 px-2 text-right font-bold text-amber-300">72.9</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr class="opacity-60"><td class="py-2 px-2 font-bold text-slate-500">7</td><td class="py-2 px-3 font-semibold text-slate-300">Haris Rauf</td><td class="py-2 px-2 text-right">8.81</td><td class="py-2 px-2 text-right">15.00</td><td class="py-2 px-2 text-right font-bold text-slate-300">71.9</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-rose-900/60 text-rose-300">PAK (Ineligible IPL)</span></td></tr>
+                                    <tr class="opacity-60"><td class="py-2 px-2 font-bold text-slate-500">8</td><td class="py-2 px-3 font-semibold text-slate-300">Shaheen Afridi</td><td class="py-2 px-2 text-right">8.36</td><td class="py-2 px-2 text-right">14.33</td><td class="py-2 px-2 text-right font-bold text-slate-300">71.4</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-rose-900/60 text-rose-300">PAK (Ineligible IPL)</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-blue-400">9</td><td class="py-2 px-3 font-semibold text-white">Jamie Overton</td><td class="py-2 px-2 text-right">8.88</td><td class="py-2 px-2 text-right">13.06</td><td class="py-2 px-2 text-right font-bold text-amber-300">68.6</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                    <tr><td class="py-2 px-2 font-bold text-blue-400">10</td><td class="py-2 px-3 font-semibold text-white">Adam Zampa</td><td class="py-2 px-2 text-right">9.11</td><td class="py-2 px-2 text-right">12.62</td><td class="py-2 px-2 text-right font-bold text-amber-300">67.1</td><td class="py-2 px-2"><span class="px-2 py-0.5 rounded text-[9px] bg-emerald-900/60 text-emerald-300">Eligible</span></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-[#0B1536] py-6 text-center text-xs text-slate-500">
+        Rajasthan Royals Analytics War Room • SupeRR Selector Season 2 • Confidential Franchise Intelligence
+    </footer>
+
+    <script>
+        const batData = [{"rank": 1, "name": "Tristan Stubbs", "team": "Delhi Capitals / SA", "role": "Finisher / Keeper", "hp_balls": 419, "hp_runs": 830, "sr_hp": 198.1, "avg_hp": 43.7, "sr_base": 119.5, "delta_sr": "+78.6", "rating": 92.7, "unstop": "Tristan Stubbs"}, {"rank": 2, "name": "Namboori Tilak Varma", "team": "Mumbai Indians / IND", "role": "Middle Order Anchor & Accelerator", "hp_balls": 466, "hp_runs": 940, "sr_hp": 201.7, "avg_hp": 39.2, "sr_base": 129.6, "delta_sr": "+72.1", "rating": 90.9, "unstop": "Namboori Tilak Varma"}, {"rank": 3, "name": "Tim David", "team": "Mumbai Indians / AUS", "role": "Power Finisher (Death Overs)", "hp_balls": 522, "hp_runs": 1067, "sr_hp": 204.4, "avg_hp": 33.3, "sr_base": 157.8, "delta_sr": "+46.6", "rating": 87.7, "unstop": "Tim David"}, {"rank": 4, "name": "Rinku Singh", "team": "Kolkata Knight Riders / IND", "role": "Clutch Finisher & Chase Master", "hp_balls": 540, "hp_runs": 1045, "sr_hp": 193.5, "avg_hp": 32.7, "sr_base": 123.1, "delta_sr": "+70.4", "rating": 86.2, "unstop": "Rinku Singh"}, {"rank": 5, "name": "Suryakumar Yadav", "team": "Mumbai Indians / IND", "role": "360\u00b0 Game Changer", "hp_balls": 300, "hp_runs": 672, "sr_hp": 224.0, "avg_hp": 30.5, "sr_base": 159.4, "delta_sr": "+64.6", "rating": 84.7, "unstop": "Suryakumar Yadav"}, {"rank": 6, "name": "Rishabh Pant", "team": "Delhi Capitals / IND", "role": "Explosive Wicketkeeper-Batter", "hp_balls": 260, "hp_runs": 528, "sr_hp": 203.1, "avg_hp": 35.2, "sr_base": 127.1, "delta_sr": "+75.9", "rating": 83.2, "unstop": "Rishabh Pant"}, {"rank": 7, "name": "Shashank Singh", "team": "Punjab Kings / IND", "role": "Lower-Order Ice-Man", "hp_balls": 240, "hp_runs": 450, "sr_hp": 187.5, "avg_hp": 37.5, "sr_base": 142.2, "delta_sr": "+45.3", "rating": 81.6, "unstop": "Shashank Singh"}, {"rank": 8, "name": "David Miller", "team": "Gujarat Titans / SA", "role": "Veteran Chase Finisher", "hp_balls": 441, "hp_runs": 779, "sr_hp": 176.6, "avg_hp": 30.0, "sr_base": 134.9, "delta_sr": "+41.7", "rating": 79.9, "unstop": "David Miller"}, {"rank": 9, "name": "Naman Dhir", "team": "Mumbai Indians / IND", "role": "High-Impact Utility Hitter", "hp_balls": 188, "hp_runs": 382, "sr_hp": 203.2, "avg_hp": 34.7, "sr_base": 152.1, "delta_sr": "+51.1", "rating": 79.5, "unstop": "Naman Dhir"}, {"rank": 10, "name": "Jos Buttler", "team": "Rajasthan Royals / ENG", "role": "Pace-Setting Match-Winner", "hp_balls": 278, "hp_runs": 562, "sr_hp": 202.2, "avg_hp": 28.1, "sr_base": 150.3, "delta_sr": "+51.9", "rating": 79.4, "unstop": "Jos Buttler"}];
+        const bowlData = [{"rank": 1, "name": "Jasprit Bumrah", "team": "Mumbai Indians / IND", "role": "All-Phase Gold Standard Pacer", "hp_balls": 505, "hp_wkts": 40, "econ_hp": 7.15, "avg_hp": 15.05, "econ_base": 7.31, "delta_econ": "-0.16", "rating": 78.4, "unstop": "Jasprit Bumrah"}, {"rank": 2, "name": "Kuldeep Yadav", "team": "Delhi Capitals / IND", "role": "Left-Arm Wrist Spin Wicket-Taker", "hp_balls": 265, "hp_wkts": 29, "econ_hp": 7.86, "avg_hp": 11.97, "econ_base": 8.04, "delta_econ": "-0.18", "rating": 77.2, "unstop": "Kuldeep Yadav"}, {"rank": 3, "name": "Sunil Narine", "team": "Kolkata Knight Riders / WI", "role": "Mystery Spin & Suffocation Specialist", "hp_balls": 251, "hp_wkts": 19, "econ_hp": 6.55, "avg_hp": 14.42, "econ_base": 6.93, "delta_econ": "-0.38", "rating": 76.9, "unstop": "Sunil Narine"}, {"rank": 4, "name": "Matheesha Pathirana", "team": "Chennai Super Kings / SL", "role": "Sling-Action Yorker Machine (Death)", "hp_balls": 484, "hp_wkts": 47, "econ_hp": 8.69, "avg_hp": 14.91, "econ_base": 8.93, "delta_econ": "-0.24", "rating": 73.9, "unstop": "Matheesha Pathirana"}, {"rank": 5, "name": "Noor Ahmad", "team": "Gujarat Titans / AFG", "role": "Left-Arm Mystery Wrist Spin", "hp_balls": 222, "hp_wkts": 21, "econ_hp": 7.86, "avg_hp": 13.86, "econ_base": 8.03, "delta_econ": "-0.17", "rating": 72.9, "unstop": "Noor Ahmad"}, {"rank": 6, "name": "Jamie Overton", "team": "Surrey / ENG", "role": "High-Pace Hit-The-Deck Enforcer", "hp_balls": 150, "hp_wkts": 17, "econ_hp": 8.88, "avg_hp": 13.06, "econ_base": 8.55, "delta_econ": "+0.33", "rating": 68.6, "unstop": "Jamie Overton"}, {"rank": 7, "name": "Adam Zampa", "team": "Rajasthan Royals / AUS", "role": "Attacking Leg-Spin Specialist", "hp_balls": 241, "hp_wkts": 29, "econ_hp": 9.11, "avg_hp": 12.62, "econ_base": 8.18, "delta_econ": "+0.93", "rating": 67.1, "unstop": "Adam Zampa"}, {"rank": 8, "name": "Rasikh Salam", "team": "Delhi Capitals / IND", "role": "Indian Domestic Death & Slower Ball Pacer", "hp_balls": 172, "hp_wkts": 20, "econ_hp": 9.66, "avg_hp": 13.85, "econ_base": 9.54, "delta_econ": "+0.13", "rating": 66.6, "unstop": "Rasikh Salam"}, {"rank": 9, "name": "Yuzvendra Chahal", "team": "Rajasthan Royals / IND", "role": "IPL All-Time Leading Wicket-Taker", "hp_balls": 423, "hp_wkts": 40, "econ_hp": 9.26, "avg_hp": 16.33, "econ_base": 8.46, "delta_econ": "+0.80", "rating": 66.1, "unstop": "Yuzvendra Chahal"}, {"rank": 10, "name": "Mitchell Santner", "team": "Chennai Super Kings / NZ", "role": "Defensive Left-Arm Spin & Control", "hp_balls": 203, "hp_wkts": 16, "econ_hp": 8.1, "avg_hp": 17.13, "econ_base": 7.36, "delta_econ": "+0.74", "rating": 65.3, "unstop": "Mitchell Santner"}];
+
+        function renderTables() {
+            const bBody = document.getElementById('batters-table-body');
+            bBody.innerHTML = batData.map(b => `
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="py-3 px-3 font-black text-pink-400 text-sm">#${b.rank}</td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-white text-xs">${b.name}</div>
+                        <div class="text-[10px] text-slate-400 font-normal">${b.team}</div>
+                    </td>
+                    <td class="py-3 px-3 text-slate-300 text-[11px]">${b.role}</td>
+                    <td class="py-3 px-3 text-right font-mono">${b.hp_balls}</td>
+                    <td class="py-3 px-3 text-right font-mono font-bold text-white">${b.hp_runs}</td>
+                    <td class="py-3 px-3 text-right font-mono font-bold text-pink-400">${b.sr_hp.toFixed(1)}</td>
+                    <td class="py-3 px-3 text-right font-mono">${b.avg_hp.toFixed(1)}</td>
+                    <td class="py-3 px-3 text-right font-mono font-bold text-emerald-400">${b.delta_sr}</td>
+                    <td class="py-3 px-3 text-right font-mono font-black text-amber-300 text-sm">${b.rating.toFixed(1)}</td>
+                </tr>
+            `).join('');
+
+            const bwBody = document.getElementById('bowlers-table-body');
+            bwBody.innerHTML = bowlData.map(b => `
+                <tr class="hover:bg-slate-800/40 transition-colors">
+                    <td class="py-3 px-3 font-black text-blue-400 text-sm">#${b.rank}</td>
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-white text-xs">${b.name}</div>
+                        <div class="text-[10px] text-slate-400 font-normal">${b.team}</div>
+                    </td>
+                    <td class="py-3 px-3 text-slate-300 text-[11px]">${b.role}</td>
+                    <td class="py-3 px-3 text-right font-mono">${b.hp_balls}</td>
+                    <td class="py-3 px-3 text-right font-mono font-bold text-white">${b.hp_wkts}</td>
+                    <td class="py-3 px-3 text-right font-mono font-bold text-emerald-400">${b.econ_hp.toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right font-mono">${b.avg_hp.toFixed(1)}</td>
+                    <td class="py-3 px-3 text-right font-mono font-bold ${parseFloat(b.delta_econ) <= 0 ? 'text-emerald-400' : 'text-blue-400'}">${b.delta_econ}</td>
+                    <td class="py-3 px-3 text-right font-mono font-black text-amber-300 text-sm">${b.rating.toFixed(1)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('section[id^="tab-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-[#E80071]', 'text-white');
+                btn.classList.add('bg-slate-800/60', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById('tab-btn-' + tabId);
+            activeBtn.classList.remove('bg-slate-800/60', 'text-slate-300');
+            activeBtn.classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', renderTables);
+    </script>
+</body>
+</html>
